@@ -1,7 +1,9 @@
-// this file is Supabase connection w/ broswer
-// use file in any components that user directly interacts (button, forms, clicks, updates)
+// this file is Supabase connection w/ BROWSER
+// use file in any components that user directly interacts (button, forms, clicks, updates
+// browser JavaScript can read/write cookies directly 
 
 // client = object w/ methods that allows comms w/ supabase database + auth
+// ssr = server side rendering | handles cookies, sessions, auth
 import { createBrowserClient } from '@supabase/ssr'
 
 // make function avalable to other files 
