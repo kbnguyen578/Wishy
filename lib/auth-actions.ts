@@ -9,7 +9,7 @@ export async function login(formData: FormData) {
   const supabase = await createClient();
 
   // type-casting here for convenience
-  // in practice, you should validate your inputs
+  // ⚠️ IN PRODUCTION VALIDATE THIS WITH A LIBRARY (EX. ZOD) ⚠️
   const data = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
@@ -18,6 +18,7 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
+    // ⚠️ polished app = specify error message ⚠️
     redirect("/error");
   }
 
@@ -29,7 +30,7 @@ export async function signup(formData: FormData) {
   const supabase = await createClient();
 
   // type-casting here for convenience
-  // in practice, you should validate your inputs
+  // ⚠️ IN PRODUCTION VALIDATE THIS WITH A LIBRARY (EX. ZOD) ⚠️
   const firstName = formData.get("first-name") as string;
   const lastName = formData.get("last-name") as string;
   const data = {
@@ -49,6 +50,7 @@ export async function signup(formData: FormData) {
     redirect("/error");
   }
 
+  // ⚠️  didint confirm email -> "check your email page" ⚠️ 
   revalidatePath("/", "layout");
   redirect("/");
 }
@@ -61,6 +63,7 @@ export async function signout() {
     redirect("/error");
   }
 
+  // ⚠️ CREATE /logout page that says "You've been signed out" ⚠️ 
   redirect("/logout");
 }
 
