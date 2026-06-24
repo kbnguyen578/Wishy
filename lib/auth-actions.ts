@@ -31,8 +31,8 @@ export async function signup(formData: FormData) {
 
   // type-casting here for convenience
   // ⚠️ IN PRODUCTION VALIDATE THIS WITH A LIBRARY (EX. ZOD) ⚠️
-  const firstName = formData.get("first-name") as string;
-  const lastName = formData.get("last-name") as string;
+  const firstName = formData.get("first_name") as string;
+  const lastName = formData.get("last_name") as string;
   const data = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
