@@ -228,5 +228,38 @@ export async function getSharedWishlist( token: string ){
     }; 
 }
 
+// ======== Claiming an Item ========
+export async function claimItem ( itemId: StorageManager, claimerName: string ){
+    const supabase = await createClient(); 
 
+    // check if item has already been claimed by someone else 
+    const { data: existingClaim } = await supabase
+    .from("claims")
+    .select("id")
+    .eq("item_id", itemId)
+    .single();
+
+    if (existingClaim){
+        throw new Error("Someone has already claimed this item.")
+    }
+
+    const authResponse = await supabase.auth.getUser(); 
+    const user = authResponse.data.user;
+
+    if( !user ){
+        redirect("/login");
+    }
+
+    const { error } = await supabase
+    .from("claims")
+    .insert({
+        item_id: itemId, 
+        claimer_name: claimerName, 
+        claimer_id: user.id,
+    });
+
+    if (error){
+        throw new Error("Could not claim item: " + error.message);
+    }
+}
 
