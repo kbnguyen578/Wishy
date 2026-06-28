@@ -69,7 +69,7 @@ export async function addWishlistItem(formData: FormData){
 
     // find user wishlist to attach item to 
     const { data: wishlist, error: wishlistError } = await supabase
-    .from("wishlists")
+    .from("wishlist")
     .select("id")
     .eq("owner_id", user.id)
     .single();
@@ -142,4 +142,91 @@ export async function editWishlistItem( formData: FormData ){
 }
 
 // ======== Mark Item as Recieved/Remove an Item ========
+export async function markAsRecieved( id: string ){
+    const supabase = await createClient(); 
+
+    const authResponse = await supabase.auth.getUser(); 
+    const user = authResponse.data.user;
+
+    if( !user ){
+        redirect("/login");
+    }
+
+    const { error } = await supabase
+    .from("wishlistitems")
+    .update({ received: true })
+    .eq("id", id); // only update this particular item
+
+    if (error){
+        throw new Error("Could not mark item as received: " + error.message);
+    }
+
+    revalidatePath("/dashboard")
+
+}
+
+// ======== Get Shared Wishlist ========
+export async function getSharedWishlist( token: string ){
+    const supabase = await createClient(); 
+
+    // find the wishlsit that matches share token 
+    const { data: wishlist, error: wishlistError } = await supabase
+    .from("wishlist")
+    .select("*")
+    .eq("share_token", token)
+    .single(); 
+
+    // token not match, return null => page not found shown 
+    if ( wishlistError || !wishlist ){
+        return null; 
+    }
+
+    // fetch unrecieved items for this wishlist 
+    const { data: items, error: itemsError } = await supabase
+    .from("wishlist_items")
+    .select("*")
+    .eq("wishlist_id", wishlist.id)
+    .eq("received", false)
+    .order("created_at", { ascending: true });
+
+    if (itemsError){
+        throw new Error("Could not fetch items: " + itemsError.message);
+    }
+
+    // if there are no items, use an empty array 
+    const wishlistItems = items ?? []; 
+
+    // get ids for all the items so we can check which are claimed 
+    const itemIds = wishlistItems.map(function(item){
+        return item.id;
+    });
+
+    // fetch the claims for the items, RLS ensures owner cannot view from share token 
+    const { data: claims } = await supabase
+    .from("claims")
+    .select("item_id")
+    .in("item_id", itemIds); 
+
+    // set of claimed items for quick lookup 
+    const claimedItemIds = new Set(
+        (claims ?? []).map(function(claim){
+            return claim.item_id;
+        })
+    ); 
+
+    // attach claimed boolean to each item so the UI knows what to show 
+    const itemsWithClaimStat = wishlistItems.map(function(item){
+        return{
+            ...item, 
+            claimed: claimedItemIds.has(item.id),
+        };
+    });
+
+    return {
+        wishlist: wishlist, 
+        items: itemsWithClaimStat,
+    }; 
+}
+
+
 
