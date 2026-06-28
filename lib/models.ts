@@ -1,4 +1,10 @@
 // so that typescript knows the structure of supabase model 
+export interface Profile {
+    id:             string;
+    full_name:      string | null; 
+    email:          string | null; 
+    avatar_url:     string | null; 
+}
 
 export interface Wishlist {
     id:             string; 
@@ -16,7 +22,7 @@ export interface WishlistItem {
     color:          string | null; 
     price:          string | null; 
     url:            string | null; 
-    recieved:       boolean; 
+    received:       boolean; 
 }
 
 export interface Claims {
