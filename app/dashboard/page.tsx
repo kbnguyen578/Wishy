@@ -1,0 +1,1 @@
+// main page that fetches and displays everything (server component) -> WishlistClient = client component 

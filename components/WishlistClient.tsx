@@ -1,0 +1,1 @@
+// renders all the UI for updating the wishlist 
