@@ -81,9 +81,9 @@ export async function addWishlistItem(formData: FormData){
     // read values user typed into form 
     const name = formData.get("name") as string;
     const size = ( formData.get("size") as string ) || null; 
-    const color = ( formData.get("color")) || null; 
-    const price = ( formData.get("price")) || null; 
-    const url = ( formData.get("url")) || null; 
+    const color = ( formData.get("color") as string) || null; 
+    const price = ( formData.get("price") as string) || null; 
+    const url = ( formData.get("url") as string) || null; 
 
     // insert item into database 
     const { error } = await supabase.from("wishlist_item").insert({
@@ -104,4 +104,42 @@ export async function addWishlistItem(formData: FormData){
     revalidatePath("/dashboard");
 }
 
+// ======== Editing Wishlist Items ========
+export async function editWishlistItem( formData: FormData ){
+    const supabase = await createClient(); 
+
+    const authResponse = await supabase.auth.getUser(); 
+    const user = authResponse.data.user;
+
+    if( !user ){
+        redirect("/login");
+    }
+
+    const id = formData.get("id") as string; 
+    const name = formData.get("name") as string; 
+    const size = ( formData.get("size") as string ) || null; 
+    const color = ( formData.get("color") as string) || null; 
+    const price = ( formData.get("price") as string) || null; 
+    const url = ( formData.get("url") as string) || null; 
+
+    // update only the fields the user changed 
+    const { error }  = await supabase
+    .from("wishlist_items")
+    .update({
+        name: name, 
+        size: size, 
+        color: color,
+        price: price, 
+        url: url, 
+    })
+    .eq("id", id); // only update the row with this specific id 
+
+    if (error){
+        throw new Error("Could not update item:" + error.message);
+    }
+
+    revalidatePath("/dashboard")
+}
+
+// ======== Mark Item as Recieved/Remove an Item ========
 
