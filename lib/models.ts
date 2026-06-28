@@ -20,7 +20,7 @@ export interface WishlistItem {
     name:           string; 
     size:           string | null; 
     color:          string | null; 
-    price:          string | null; 
+    price:          number | null; 
     url:            string | null; 
     received:       boolean; 
 }
