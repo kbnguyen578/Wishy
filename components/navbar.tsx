@@ -12,12 +12,12 @@ export default function Navbar({ userName, avatarUrl }: NavbarProps){
     const initial = userName?.trim()?.[0]?.toUpperCase(); 
 
     return (
-        <nav className="w-full bg-[#F7F7F7] flex items-center justify-between px-8 py-6">
+        <nav className="w-full bg-[#F7F7F7] flex items-center justify-between px-18 py-6">
             {/* wishy logo */}
             <img 
             src="/Wishy_Logo.svg"
             alt="Wishy Logo"
-            className="h-9 w-auto"
+            className="h-15 w-auto"
             />
         
             {/* profile bubble */}

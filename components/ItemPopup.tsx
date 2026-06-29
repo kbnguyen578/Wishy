@@ -39,7 +39,7 @@ export default function ItemPopUp({ item, onClose }: ItemPopUpProps ){
     }
 
     return (
-         <dialog ref = {dialogRef} onClick={handleBackdropClick} className="w-full max-w-md rounded-2xl p-0 shadow-xl backdrop:bg-black/30 backdrop:backdrop-blur-sm">
+         <dialog ref = {dialogRef} onClick={handleBackdropClick} className="flex justify-center w-full max-w-md rounded-2xl p-0 shadow-xl backdrop:bg-black/30 backdrop:backdrop-blur-sm fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
             <div className="p-6"> 
 
                 {/* Header row w/ title & close button */}
@@ -133,7 +133,7 @@ export default function ItemPopUp({ item, onClose }: ItemPopUpProps ){
                             type="url"
                             defaultValue={item?.url ?? ""}
                             placeholder="https://..."
-                            className="border border-gray-200 rounded-lg py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                            className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
                         />
                     </div>
 

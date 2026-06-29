@@ -57,13 +57,6 @@ export default function WishlistClient({ items, shareToken}: Props) {
             <div className="w-full max-w-2xl flex flex-col gap-4">
                 {/* wishlist card */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-                    {/* empty state */}
-                    {items.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-                            <p className="text-sm">Your Wishlist is empty</p>
-                            <p className="text-sm">Tap + to add your first item.</p>
-                        </div>
-                    )}
 
                     {/* loop through each item and render a ow for it */}
                     {items.map(function(item, index) {
@@ -135,32 +128,32 @@ export default function WishlistClient({ items, shareToken}: Props) {
                     })}
 
                     {/* Add button */}
-                    <div className="pt-4 px-2">
-                        <button 
-                            onClick= {function() { setPopUpState("add"); }}
+                    <div className="py-1 px-5">
+                        <button
+                            onClick={function() { setPopUpState("add"); }}
                             aria-label="Add item to wishlist"
-                            className="text-3xl text-gray-400 hoever:text-gray-900 transition-colors font-light p-1"
-                        >
-                        + 
+                            className="flex gap-2 items-center text-3xl text-gray-400 hover:text-gray-900 transition-colors font-light p-1"
+                            >
+                            <span className="leading-none">+</span> <span className="mt-1 text-sm text-gray-400 font-medium flex items-center hover:text-gray-900 transition-colors">Add to your wishlist</span>
                         </button>
                     </div>
                 </div>
 
                 {/* Share Link Section */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
-                    <span className="text-sm font-medium text-gray-900 whitespace-nowrap">
+                <div className="bg-white h-15 px-6 py-4 mx-auto w-full max-w-2xl rounded-full shadow-sm border border-gray-100 flex items-center justify-between gap-2">
+                    <div className="text-sm px-1 font-medium text-gray-900 whitespace-nowrap">
                         Your Share Link:
-                    </span>
+                    </div>
 
                     {/* capcsule holing link */}
-                    <div className="bg=[#F2F2F2] rounded-full px-5 py-2.5 text-sm text-gray-600 flex-1 truncate font-mono">
+                    <div className="bg-[#F2F2F2] rounded-xl px-2 py-2 text-sm text-gray-600 flex-1 truncate font-mono">
                         {origin ? origin : "https://wishy.com"}/wishlist/{shareToken}
                     </div>
 
                     {/* copy button */}
                     <button 
                         onClick={copyShareLink}
-                        className="bg-black text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors flex-shrink-0"
+                        className="bg-black text-white h-8 px-6 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors flex-shrink-0"
                     >
                         {copied ? "Copied!" : "Copy"}
                     </button>
