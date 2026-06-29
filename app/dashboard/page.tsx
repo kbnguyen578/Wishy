@@ -29,7 +29,7 @@ export default async function DashboardPage(){
     const items = await getWishlistItems(wishlist.id);
 
     return(
-        <main className="min-h-screen bg-[#F7F7F7]">
+        <main className="min-h-screen w-full flex flex-col bg-[#F7F7F7]">
             <Navbar 
                 userName={profile?.full_name ?? user.email}
                 avatarUrl={profile?.avatar_url}

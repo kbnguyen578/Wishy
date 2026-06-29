@@ -6,6 +6,8 @@ import { markAsReceived } from "@/lib/wishlist-action";
 import ItemPopUp from "./ItemPopup";
 import { WishlistItem } from "@/lib/models";
 
+import { Link } from "lucide-react";
+
 type Props = {
     items: WishlistItem[];
     shareToken: string;
@@ -60,6 +62,8 @@ export default function WishlistClient({ items, shareToken}: Props) {
 
                     {/* loop through each item and render a ow for it */}
                     {items.map(function(item, index) {
+                        const formattedPrice = item.price ? `$${Number(item.price).toFixed(2)}` : null
+
                         return (
                             <div key={item.id}>
                                 <div className="flex items-center gap-4 px-6 py-4">
@@ -97,8 +101,8 @@ export default function WishlistClient({ items, shareToken}: Props) {
 
                                     {/* only show price line if exists */}
                                     {item.price && (
-                                        <span className="text-sm text-gray-500 flex-shrink-0">
-                                            {item.price}
+                                        <span className="text-sm text-gray-500 flex-shrink-0 ml-auto">
+                                            {formattedPrice}
                                         </span>
                                     )}
 
@@ -113,16 +117,15 @@ export default function WishlistClient({ items, shareToken}: Props) {
                                                 // stop the click from also triggering the row's edit pop up
                                                 e.stopPropagation();
                                             }}
-                                            className="text-gray-300 hover:text-gray-600 transition-colors flex-shrink-0 text-lg">
-                                                ↗
+                                            className="ml-auto text-gray-300 hover:text-gray-600 transition-colors flex-shrink-0 text-lg">
+                                                <Link className="w-5 h-5" strokeWidth={2}/>
                                             </a>
                                     )}
-
-                                    {/* divider line between rows  */}
-                                    {index < items.length && (
-                                        <div className="h-px bg-gray-100 mx-6" />
-                                    )}
                                 </div>
+                                {/* divider line between rows  */}
+                                {index < items.length && (
+                                    <div className="h-px bg-gray-100 mx-6" />
+                                )}
                             </div>        
                         ); 
                     })}
