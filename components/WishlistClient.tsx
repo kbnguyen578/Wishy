@@ -1,8 +1,8 @@
 // renders all the UI for updating the wishlist 
 "use client";
 
-import { useState } from "react";
-import { markAsRecieved } from "@/lib/wishlist-action";
+import { useState, useEffect } from "react";
+import { markAsReceived } from "@/lib/wishlist-action";
 import ItemPopUp from "./ItemPopup";
 import { WishlistItem } from "@/lib/models";
 
@@ -21,11 +21,20 @@ export default function WishlistClient({ items, shareToken}: Props) {
     // tracks if share link was copied -- "Copied!"
     const [copied, setCopied] = useState(false);
 
+    // tracks if component has mounted in the actual browser
+    const [orin, setOrigin] = useState("");
+
+    useEffect(function() {
+        if (typeof window !== "undefined") {
+            setOrigin(window.location.origin);
+        }
+    }, []);
+
     // owner marked as received 
     async function handleRecieved( id:string ){
         // show loading 
         setPendingId(id);
-        await markAsRecieved(id); //function automatically refreshes page 
+        await markAsReceived(id); //function automatically refreshes page 
         //clear loading state 
         setPendingId(null);
     }
@@ -145,7 +154,7 @@ export default function WishlistClient({ items, shareToken}: Props) {
 
                     {/* capcsule holing link */}
                     <div className="bg=[#F2F2F2] rounded-full px-5 py-2.5 text-sm text-gray-600 flex-1 truncate font-mono">
-                        {window.location.origin}/wishlist/{shareToken}
+                        {origin ? origin : "https://wishy.com"}/wishlist/{shareToken}
                     </div>
 
                     {/* copy button */}

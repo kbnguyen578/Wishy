@@ -28,7 +28,11 @@ export async function getOrCreateWishlist(): Promise<Wishlist> {
     }
 
     // dont have one = new wishlist 
-    const { data: newWishlist, error } = await supabase.from("wishlist").insert({ owner_id: user }).select().single()
+    const { data: newWishlist, error } = await supabase
+    .from("wishlist")
+    .insert({ owner_id: user.id })
+    .select()
+    .single()
 
     // if something goes wrong...
     if (error){
@@ -46,7 +50,7 @@ export async function getWishlistItems(wishlistId: string): Promise<WishlistItem
     .from("wishlist_items")
     .select("*")
     .eq("wishlist_id", wishlistId)
-    .eq("recieved", false)
+    .eq("received", false)
     .order("created_at", { ascending: true }) // oldest displayed first 
 
     if (error){
@@ -86,7 +90,7 @@ export async function addWishlistItem(formData: FormData){
     const url = ( formData.get("url") as string) || null; 
 
     // insert item into database 
-    const { error } = await supabase.from("wishlist_item").insert({
+    const { error } = await supabase.from("wishlist_items").insert({
         wishlist_id: wishlist.id, 
         name: name, 
         size: size, 
@@ -142,7 +146,7 @@ export async function editWishlistItem( formData: FormData ){
 }
 
 // ======== Mark Item as Recieved/Remove an Item ========
-export async function markAsRecieved( id: string ){
+export async function markAsReceived( id: string ){
     const supabase = await createClient(); 
 
     const authResponse = await supabase.auth.getUser(); 
@@ -153,7 +157,7 @@ export async function markAsRecieved( id: string ){
     }
 
     const { error } = await supabase
-    .from("wishlistitems")
+    .from("wishlist_items")
     .update({ received: true })
     .eq("id", id); // only update this particular item
 
@@ -229,7 +233,7 @@ export async function getSharedWishlist( token: string ){
 }
 
 // ======== Claiming an Item ========
-export async function claimItem ( itemId: StorageManager, claimerName: string ){
+export async function claimItem ( itemId: string, claimerName: string ){
     const supabase = await createClient(); 
 
     // check if item has already been claimed by someone else 
