@@ -241,7 +241,7 @@ export async function claimItem ( itemId: string, claimerName: string ){
     .from("claims")
     .select("id")
     .eq("item_id", itemId)
-    .single();
+    .maybeSingle();
 
     if (existingClaim){
         throw new Error("Someone has already claimed this item.")
