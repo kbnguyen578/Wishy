@@ -59,7 +59,7 @@ export default async function SharedWishlistPage({ params}: Props){
 
             <div className="flex flex-col items-center px-8 pt-6 pb-16 gap-4">
                 {/* wishlist owner header */}
-                <div className="w-full max-w-xl">
+                <div className="w-full max-w-2xl px-2">
                     <h1 className="text-xl font-medium text-gray-800">
                         {ownerProfile?.full_name ? ownerProfile.full_name + "'s Wishlist" : "Wishlist"}
                     </h1>

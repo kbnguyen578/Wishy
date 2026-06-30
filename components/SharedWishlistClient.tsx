@@ -67,7 +67,7 @@ export default function SharedWishlistClient({ items, currentUserId }: Props){
     
     // items in a wishlist 
     return (
-        <div className="w-full max-w-xl flex flex-col gap-3">
+        <div className="w-full max-w-2xl flex flex-col gap-4">
 
             {/* Error messafe if claiming fails */}
             {error && (
@@ -88,8 +88,29 @@ export default function SharedWishlistClient({ items, currentUserId }: Props){
                         <div key={item.id}>
 
                             {/* gray out if claimed */}
-                            <div className={"flex items-center gap-4 px-6 py-4" + (isClaimed ? "opacity-50" : "")}>
+                            <div className="flex items-center gap-4 px-6 py-4">
                                 
+                                 {/* claimed badge */}
+                                {isClaimed ? (
+                                    // already claimed -- gray badge 
+                                    <span className="text-xs bg-gray-100 text-gray-400 px-3 py-1 rounded-full flex-shrink-0">Claimed</span>
+                                ) : (
+                                    // available -- show claim button 
+                                    <button 
+                                        onClick={function() { handleClaim(item.id); }}
+                                        disabled={isLoading}
+                                        className={"w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 " +
+                                            (isClaimed 
+                                                ? "border-gray-200 bg-gray-100 cursor-not-allowed" // Claimed state
+                                                : isLoading
+                                                    ? "border-gray-200 bg-gray-50 animate-pulse" // Loading state
+                                                    : "border-gray-300 hover:border-gray-900 hover:bg-gray-900/5 cursor-pointer" // Default interactive state
+                                            )
+                                        }
+                                    >
+                                    </button>
+                                )}
+
                                 {/* item info */}
                                 <div className="flex-1">
                                     <p className="text-sm font-medium text-gray-800">{item.name}</p>
@@ -125,25 +146,7 @@ export default function SharedWishlistClient({ items, currentUserId }: Props){
                                     </a>
                                 )}
 
-                                {/* claimed badge */}
-                                {isClaimed ? (
-                                    // already claimed -- gray badge 
-                                    <span className="text-xs bg-gray-100 text-gray-400 px-3 py-1 rounded-full flex-shrink-0">Claimed</span>
-                                ) : (
-                                    // available -- show claim button 
-                                    <button 
-                                        onClick={function() { handleClaim(item.id); }}
-                                        disabled={isLoading}
-                                        className={"text-xs px-3 py-1 rounded-full flex-shrink-0 transition-all" + 
-                                            (isLoading 
-                                                ? "bg-gray-100 text-gray-400"
-                                                : "bg-gray-900 text-white hover:bg-gray-700"
-                                            )
-                                        }
-                                    >
-                                        {isLoading ? "Claiming..." : "I'll get this"}
-                                    </button>
-                                )}
+                               
                             </div>
 
                             {/* divider between rows */}
