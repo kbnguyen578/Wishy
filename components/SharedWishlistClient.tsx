@@ -1,50 +1,70 @@
 // renders all the UI for seeing a friend's wishlist 
 
-"use client"; 
+"use client"; // runs on browser not server 
 
+// let a component "remember" values across re-renders and trigger re-render when values change 
 import { useState } from "react";
+
+// server actions for unclaim and claiming actions 
 import { claimItem, unclaimItem } from "@/lib/wishlist-action";
+
+// knows what data type working with and its properties 
 import { WishlistItem } from "@/lib/models";
+
+// icons from lucide react for no items yet and link to item 
 import { Frown, Link } from "lucide-react";
 
-// extended WishListItem 
+// extended WishListItem -- new type, 2 new fields: if its claimed and if the user was the claimer 
 type SharedItem = WishlistItem & {
     claimed: boolean; 
     claimedByMe: boolean;
 }
 
+// what component expectss to recive from parent (page.tsx): an arrary of items and the id of who is viewing the page
 type Props = {
-    items: SharedItem[]; 
-    currentUserId: string;
+    items: SharedItem[]; // array of items 
+    currentUserId: string; // who is viewing the page 
 }; 
 
+// compnent function
+// {items, currentUserId} -- destructuring | pulling those values out of props object instead of writing prop.items everywhere
 export default function SharedWishlistClient({ items, currentUserId }: Props){
 
     // tracks which item is currently being claimed/unclaimed for loading state
+    // state variable (start = null), setPendingId = change state func 
+    // <string | null> -> tell React what type it could be
     const [ pendingId, setPendingId ] = useState<string | null>(null);
 
     // tracks claim changes in this session (UI updates instantly)
+    // state variable holding a Map, (key:itemId, value:booleans), true = claimed by me LOCALLY, false = unclaimed locally 
     const [ localChanges, setLocalChanges ] = useState<Map<string, boolean>>(new Map());
 
     // error message -- claiming fails 
+    // state variable for error messages 
     const [ error, setError ] = useState<string | null>(null);
 
+    // takes the ID of the item being claim and ATTEMPT to claim the item 
     async function handleClaim(itemId: string){
-        // clear prev errors 
+        // clear prev errors before attempting action so old errors dont linger
         setError(null); 
 
-        // show loading state of item
+        // show loading/disabled state of item
         setPendingId(itemId);
 
+        // the ATTEMPT to try to claim 
         try{
-            await claimItem(itemId, currentUserId);
+            await claimItem(itemId, currentUserId); // await pauses function until server responds 
 
+            // claim success -> update React state -- NEVER MUTATE, create a new Map 
+            // copies existing/previous map and set boolean to true
+            // return new map to replace the old map 
             setLocalChanges(function(previous){
                 const next = new Map(previous);
                 next.set(itemId, true);
                 return next;
             }); 
-        } catch (err) {
+
+        } catch (err) { // claim unsuccessful -> error message, displayed if readable (e.g. "Already Claimed")
             if (err instanceof Error){
                 setError(err.message);
             } else {
@@ -52,10 +72,11 @@ export default function SharedWishlistClient({ items, currentUserId }: Props){
             }
         }
 
-        // clear loading state 
+        // clear loading state, success or fail -> clear so loading state goes away 
         setPendingId(null);
     }
 
+    // ATTEMPT to unclaim an item 
     async function handleUnclaim( itemId: string){
         setError(null);
 
