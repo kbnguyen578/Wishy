@@ -135,10 +135,7 @@ export async function signup(formData: FormData) {
     redirect("/error");
   }
 
-  // clear cache, return to home 
-  // ⚠️  didint confirm email -> "check your email page" ⚠️ 
-  revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/verifyEmail");
 }
 
 /* 
@@ -193,6 +190,7 @@ export async function signInWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
       queryParams: {
         /* 
           access_type: "offline" requests "refresh token" from Google 
