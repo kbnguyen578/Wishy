@@ -119,7 +119,7 @@ export default function SharedWishlistClient({ items, currentUserId }: Props){
                         <div key={item.id}>
 
                             {/* gray out if claimed */}
-                            <div className="flex items-center gap-4 px-6 py-4">
+                            <div className={`flex items-center gap-4 px-6 py-4 ${isClaimed ? "opacity-50" : ""}`}>
                                 
                                  {/* claimed badge */}
                                 {isClaimed ? (
