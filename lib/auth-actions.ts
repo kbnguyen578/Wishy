@@ -50,9 +50,7 @@ export async function signup(formData: FormData) {
     redirect("/error");
   }
 
-  // ⚠️  didint confirm email -> "check your email page" ⚠️ 
-  revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/verifyEmail");
 }
 
 export async function signout() {
