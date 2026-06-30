@@ -25,7 +25,7 @@ export default async function SharedWishlistPage({ params}: Props){
         redirect("/login");
     }
 
-    const result = await getSharedWishlist(token);
+    const result = await getSharedWishlist(token, user.id);
 
     if(!result){
         return(

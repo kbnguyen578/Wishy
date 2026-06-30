@@ -170,7 +170,7 @@ export async function markAsReceived( id: string ){
 }
 
 // ======== Get Shared Wishlist ========
-export async function getSharedWishlist( token: string ){
+export async function getSharedWishlist( token: string, currentUserId: string ){
     const supabase = await createClient(); 
 
     // find the wishlsit that matches share token 
@@ -208,13 +208,13 @@ export async function getSharedWishlist( token: string ){
     // fetch the claims for the items, RLS ensures owner cannot view from share token 
     const { data: claims } = await supabase
     .from("claims")
-    .select("item_id")
+    .select("item_id, claimer_id")
     .in("item_id", itemIds); 
 
-    // set of claimed items for quick lookup 
-    const claimedItemIds = new Set(
+    // map of item id -> claimer_id so we know WHO claimed each item
+    const claimedByMap = new Map(
         (claims ?? []).map(function(claim){
-            return claim.item_id;
+            return [claim.item_id, claim.claimer_id];
         })
     ); 
 
@@ -222,7 +222,8 @@ export async function getSharedWishlist( token: string ){
     const itemsWithClaimStat = wishlistItems.map(function(item){
         return{
             ...item, 
-            claimed: claimedItemIds.has(item.id),
+            claimed: claimedByMap.has(item.id),
+            claimedByMe: claimedByMap.get(item.id) === currentUserId,
         };
     });
 
