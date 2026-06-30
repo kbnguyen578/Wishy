@@ -131,7 +131,7 @@ export default function SharedWishlistClient({ items, currentUserId }: Props){
                                                 "text-xs px-3 py-1 rounded-full flex-shrink-0 transition-colors " +
                                                 (isLoading
                                                     ? "bg-gray-100 text-gray-400"
-                                                    : "bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500")
+                                                    : "bg-gray-100 text-gray-500 bg-red-50 text-red-500")
                                             }
                                             >
                                                 {isLoading ? "Removing..." : "Unclaim"}
