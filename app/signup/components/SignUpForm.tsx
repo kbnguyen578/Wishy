@@ -37,11 +37,11 @@ export function SignupForm({
                 {/* <FieldLabel htmlFor="name">Full Name</FieldLabel>
                 <Input id="name" name="first_name" type="text" placeholder="John Doe" required /> */}
                 <Field>
-                    <FieldLabel htmlFor="first_name">First Name</FieldLabel>
+                    <FieldLabel htmlFor="first_name">First Name<span className="text-red-400">*</span></FieldLabel>
                     <Input id="first_name" name="first_name" type="text" placeholder="John" required />
                   </Field>
                   <Field>
-                    <FieldLabel htmlFor="last_name">Last Name</FieldLabel>
+                    <FieldLabel htmlFor="last_name">Last Name<span className="text-red-400">*</span></FieldLabel>
                     <Input id="last_name" name="last_name" type="text" placeholder="Doe" required />
                   </Field>
               </Field>
