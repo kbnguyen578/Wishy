@@ -104,7 +104,7 @@ export default function SharedWishlistClient({ items, currentUserId }: Props){
             {/* wishlist card */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
                 {items.map(function(item, index) {
-                     const hasLocalChange = item.claimed || localChanges.has(item.id);
+                     const hasLocalChange = localChanges.has(item.id);
                      const claimedByMeNow = hasLocalChange 
                         ? localChanges.get(item.id) 
                         : item.claimedByMe; 
