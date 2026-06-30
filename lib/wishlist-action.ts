@@ -267,3 +267,25 @@ export async function claimItem ( itemId: string, claimerName: string ){
     }
 }
 
+// ======== UnClaiming an Item ========
+export async function unclaimItem( itemId: string ){
+    const supabase = await createClient();
+
+    const authResponse = await supabase.auth.getUser();
+    const user = authResponse.data.user;
+
+    if(!user){
+        redirect("/login")
+    }
+
+    // only delete claim if it belongs to the person click ubclaim 
+    const { error } = await supabase 
+    .from("claims")
+    .delete()
+    .eq("item_id", itemId) // unclaim only yours 
+    .eq("claimer_id", user.id);
+
+    if (error){
+        throw new Error("Could not unclaim item: " + error.message);
+    }
+}

@@ -3,13 +3,14 @@
 "use client"; 
 
 import { useState } from "react";
-import { claimItem } from "@/lib/wishlist-action";
+import { claimItem, unclaimItem } from "@/lib/wishlist-action";
 import { WishlistItem } from "@/lib/models";
 import { Frown, Link } from "lucide-react";
 
 // extended WishListItem 
 type SharedItem = WishlistItem & {
     claimed: boolean; 
+    claimedByMe: boolean;
 }
 
 type Props = {
@@ -19,11 +20,11 @@ type Props = {
 
 export default function SharedWishlistClient({ items, currentUserId }: Props){
 
-    // tracks which item is currently being claimed for loading state
-    const [ claimingId, setClaimingId ] = useState<string | null>(null);
+    // tracks which item is currently being claimed/unclaimed for loading state
+    const [ pendingId, setPendingId ] = useState<string | null>(null);
 
-    // tracks which items are claimed in this session (UI updates instantly)
-    const [ claimedIds, setClaimed ] = useState<Set<string>>(new Set());
+    // tracks claim changes in this session (UI updates instantly)
+    const [ localChanges, setLocalChanges ] = useState<Map<string, boolean>>(new Map());
 
     // error message -- claiming fails 
     const [ error, setError ] = useState<string | null>(null);
@@ -33,14 +34,14 @@ export default function SharedWishlistClient({ items, currentUserId }: Props){
         setError(null); 
 
         // show loading state of item
-        setClaimingId(itemId);
+        setPendingId(itemId);
 
         try{
             await claimItem(itemId, currentUserId);
 
-            setClaimed(function(previous){
-                const next = new Set(previous);
-                next.add(itemId);
+            setLocalChanges(function(previous){
+                const next = new Map(previous);
+                next.set(itemId, true);
                 return next;
             }); 
         } catch (err) {
@@ -52,7 +53,31 @@ export default function SharedWishlistClient({ items, currentUserId }: Props){
         }
 
         // clear loading state 
-        setClaimingId(null);
+        setPendingId(null);
+    }
+
+    async function handleUnclaim( itemId: string){
+        setError(null);
+
+        setPendingId(itemId);
+
+        try {
+            await unclaimItem(itemId);
+
+            setLocalChanges(function(previous){
+                const next = new Map(previous);
+                next.set(itemId, false); 
+                return next;
+            }); 
+        } catch (err) {
+            if (err instanceof Error){
+                setError(err.message); 
+            } else {
+                setError("Something wen wrong. PLease try again.");
+            }
+        }
+
+         setPendingId(null);
     }
 
     // if wishlist is empty 
@@ -79,8 +104,14 @@ export default function SharedWishlistClient({ items, currentUserId }: Props){
             {/* wishlist card */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
                 {items.map(function(item, index) {
-                     const isClaimed = item.claimed || claimedIds.has(item.id);
-                     const isLoading = claimingId === item.id; 
+                     const hasLocalChange = item.claimed || localChanges.has(item.id);
+                     const claimedByMeNow = hasLocalChange 
+                        ? localChanges.get(item.id) 
+                        : item.claimedByMe; 
+                    
+                    const isClaimed = hasLocalChange ? claimedByMeNow === true : item.claimed;
+
+                    const isLoading = pendingId === item.id;
 
                      const formattedPrice = item.price ? "$" + Number(item.price).toFixed(2) : null; 
 
@@ -92,15 +123,30 @@ export default function SharedWishlistClient({ items, currentUserId }: Props){
                                 
                                  {/* claimed badge */}
                                 {isClaimed ? (
-                                    // already claimed -- gray badge 
+                                    claimedByMeNow ? (
+                                        <button 
+                                            onClick={function() { handleUnclaim(item.id); }}
+                                            disabled={isLoading}
+                                            className={
+                                                "text-xs px-3 py-1 rounded-full flex-shrink-0 transition-colors " +
+                                                (isLoading
+                                                    ? "bg-gray-100 text-gray-400"
+                                                    : "bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500")
+                                            }
+                                            >
+                                                {isLoading ? "Removing..." : "Unclaim"}
+                                            </button>
+                                    ) : (
+                                        // already claimed -- gray badge 
                                     <span className="text-xs bg-gray-100 text-gray-400 px-3 py-1 rounded-full flex-shrink-0">Claimed</span>
+                                    )
                                 ) : (
-                                    // available -- show claim button 
+                                        // available -- show claim button 
                                     <button 
                                         onClick={function() { handleClaim(item.id); }}
                                         disabled={isLoading}
                                         className={"w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 " +
-                                            (isClaimed 
+                                            (localChanges 
                                                 ? "border-gray-200 bg-gray-100 cursor-not-allowed" // Claimed state
                                                 : isLoading
                                                     ? "border-gray-200 bg-gray-50 animate-pulse" // Loading state
@@ -109,7 +155,7 @@ export default function SharedWishlistClient({ items, currentUserId }: Props){
                                         }
                                     >
                                     </button>
-                                )}
+                                    )}
 
                                 {/* item info */}
                                 <div className="flex-1">
