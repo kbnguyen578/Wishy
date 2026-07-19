@@ -8,7 +8,11 @@ const LogoutPage =  () => {
     useEffect(() => {
         setTimeout(()=> router.push("/"), 2000);
     }, []);
-  return <div>You have logged out... redirecting in a sec.</div>;
+  return(
+    <main className="min-h-screen bg-[#F7F7F7] flex flex-col items-center justify-center gap-4 px-6">
+        <h1 className="text-xl font-medium text-gray-500 text-center">You have been logged out. Redirecting...</h1>
+    </main>
+  );
 };
 
 export default LogoutPage;
