@@ -10,7 +10,7 @@ const LogoutPage =  () => {
     }, []);
   return(
     <main className="min-h-screen bg-[#F7F7F7] flex flex-col items-center justify-center gap-4 px-6">
-        <h1 className="text-xl font-medium text-gray-500 text-center">You have been logged out. Redirecting...</h1>
+        <h1 className="text-xl font-medium text-center">You have been logged out. Redirecting...</h1>
     </main>
   );
 };
